@@ -2,7 +2,7 @@
 
 - [x] Allow downloading mega files.
 - [ ] Allow downloading google drive.
-- [ ] Allow downloading 
+- [ ] Allow downloading mediafire
 - [ ] Create classes for each system/downloader used.
 
 - [ ] Create a library
