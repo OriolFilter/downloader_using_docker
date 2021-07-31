@@ -15,3 +15,8 @@
 - [ ] Add support for Google Drive
 - [ ] Upload megadl docker to dockerhub
 - [ ] Transform manager.py to a library
+
+#### Dockerfiles
+
+- [ ] Megadl
+- [ ] Discord bot to download files
