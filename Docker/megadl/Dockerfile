@@ -34,7 +34,8 @@ RUN pip install -r requirements.txt
 
 RUN /bin/tar xzvf ${PKGTAR} --transform s/${PKGNAME}/megatools/ && \
     cd megatools && \
-    ./configure && make && make install && cd .. && rm -rf megatools && chmod +x main.py && ln -s ${WK}/main.py /usr/bin/dlmanager
+    ./configure && make && make install && cd .. && rm -rf megatools && \
+    chmod +x main.py && ln -s ${WK}/main.py /usr/bin/dlmanager && rm -rf ${PKGTAR}
 
 USER 1000:1000
 # Change workdir to the download folder
