@@ -16,6 +16,7 @@ class UnregisteredDomain(Exception):
     In case of having this error, consider contacting the administrator and providing the link that returns error in
     order to update the list and/or add new methods
     """
+    pass
 
 
 class CannotRunTheContainer(Exception):
@@ -23,6 +24,7 @@ class CannotRunTheContainer(Exception):
     For some reason wasn't able to start the docker container, it might be due not being able to access the container
     (maybe due too many requests to DockerHub) or docker service isn't running
     """
+    pass
 
 
 # Pending, probably never happening
