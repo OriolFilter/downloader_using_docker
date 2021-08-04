@@ -4,6 +4,8 @@ from urllib.parse import urlparse
 
 import sh
 from sh import docker, ErrorReturnCode, ErrorReturnCode_125
+ErrorReturnCode_125: ErrorReturnCode
+
 from colored import fore, style
 
 
@@ -73,14 +75,14 @@ class BaseContainer:
         #                                   )
         try:
             self.job = docker.run('-t', '--volume', f'{self.destination}:/downloads:rw', self.container, self.url,
-                                  # _err=self._err,
-                                  # _out=self._out,
-                                  # _done=self._done
-                                  # _bg=self._bg
+                                  _err=self._err,
+                                  _out=self._out,
+                                  _done=self._done,
+                                  _bg=self._bg
                                   )
         except ErrorReturnCode_125 as e:
-            # pass
-            raise CannotRunTheContainer
+            print("Docker not running or not accessible")
+            # raise CannotRunTheContainer("hi")
 
     def kill(self) -> None:
         """
