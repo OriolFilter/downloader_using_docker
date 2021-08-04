@@ -1,7 +1,9 @@
 from os import getcwd
 from typing import Union
 from urllib.parse import urlparse
-from sh import docker, ErrorReturnCode
+
+import sh
+from sh import docker, ErrorReturnCode, ErrorReturnCode_125
 from colored import fore, style
 
 
@@ -11,6 +13,13 @@ class UnregisteredDomain(Exception):
 
     In case of having this error, consider contacting the administrator and providing the link that returns error in
     order to update the list and/or add new methods
+    """
+
+
+class CannotRunTheContainer(Exception):
+    """
+    For some reason wasn't able to start the docker container, it might be due not being able to access the container
+    (maybe due too many requests to DockerHub) or docker service isn't running
     """
 
 
@@ -56,17 +65,26 @@ class BaseContainer:
         """
         Start download container process
         """
-        self.job = docker.run('-t', '--volume', f'{self.destination}:/downloads:rw', self.container, self.url,
-                              _err=self._err,
-                              _out=self._out,
-                              _done=self._done
-                              # _bg=self._bg
-                              )
+        # self.job = docker.run('-t', '--volume', f'{self.destination}:/downloads:rw', self.container, self.url,
+        #                                   _err=self._err,
+        #                                   _out=self._out,
+        #                                   # _done=self._done
+        #                                   # _bg=self._bg
+        #                                   )
+        try:
+            self.job = docker.run('-t', '--volume', f'{self.destination}:/downloads:rw', self.container, self.url,
+                                  # _err=self._err,
+                                  # _out=self._out,
+                                  # _done=self._done
+                                  # _bg=self._bg
+                                  )
+        except ErrorReturnCode_125 as e:
+            # pass
+            raise CannotRunTheContainer
 
     def kill(self) -> None:
         """
-        KILLS the current process
-        how? don't know yet
+        KILLS the current process, used in case of running the process in the background
 +       """
         self.job.kill()
 
@@ -99,18 +117,18 @@ class BaseContainer:
         else:
             return line
 
-    def print_out(self, line):
+    def print_out(self, line) -> None:
         txt = self.clear_line(line)
         if txt:
             print(f'{fore.GREEN_3A}[{fore.BLUE}DOCKER{fore.GREEN_3A}]{style.RESET} {txt}')
 
-    def print_err(self, line):
+    def print_err(self, line) -> None:
         txt = self.clear_line(line)
         if txt:
             print(f'{fore.GREEN_3A}[{fore.RED}ERROR{fore.GREEN_3A}]{style.RESET} {txt}')
 
     def on_done(self, *args, **kwargs) -> None:
-        self.done=True
+        self.done = True
 
     _container: str = None  # Stores the container name/url+version
 
