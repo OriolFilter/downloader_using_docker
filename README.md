@@ -1,12 +1,22 @@
+#### containers.py
+
+- [x] Allow downloading Mega files.
+- [ ] Allow downloading Google Drive.
+- [ ] Allow downloading Mediafire
+- [x] Create classes for each system/downloader used.
+    - [x] Mega
+    - [ ] Google Drive
+    - [ ] Mediafire
+
+- [x] Create a library
+
+[comment]: <> (- [ ] Change its name to find_in_files.py or something like that, and update manager.py to use the library created.)
+- [ ] Add error handling for packages not installed
+
 #### manager.py
 
-- [x] Allow downloading mega files.
-- [ ] Allow downloading google drive.
-- [ ] Allow downloading mediafire
-- [ ] Create classes for each system/downloader used.
+- [ ] Allow passing command arguments to modify its behaviour
 
-- [ ] Create a library
-- [ ] Change it's name to find_in_files.py or something like that, and update manager.py to use the library created.
 
 #### To Do
 
