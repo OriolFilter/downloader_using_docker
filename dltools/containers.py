@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 
 import sh
 from sh import docker, ErrorReturnCode, ErrorReturnCode_125
+
 ErrorReturnCode_125: ErrorReturnCode
 
 from colored import fore, style
@@ -32,6 +33,7 @@ class CannotRunTheContainer(Exception):
 # class user():
 #     user:str=getpass
 #     user:str=getpass
+
 
 class Credentials:
     """
@@ -76,7 +78,10 @@ class BaseContainer:
         #                                   # _bg=self._bg
         #                                   )
         try:
-            self.job = docker.run('-t', '--volume', f'{self.destination}:/downloads:rw', self.container, self.url,
+            print(self._container)
+            self.job = docker.run('-t', ('', f'--entrypoint {self._entrypoint}'), '--volume',
+                                  f'{self.destination}:/downloads:rw',
+                                  self._container, self.url,
                                   _err=self._err,
                                   _out=self._out,
                                   _done=self._done,
@@ -134,20 +139,17 @@ class BaseContainer:
     def on_done(self, *args, **kwargs) -> None:
         self.done = True
 
-    _container: str = None  # Stores the container name/url+version
+    _container: str = None  # Docker container name
+    _entrypoint: str = None  # Command used as entrypoint for the docker container
 
     url: str = None
     destination: str = None
 
     job: docker.run = None  # To store the function job locally
 
-    container: str = None  # Container used to download the files
-
     done: bool = None
 
     credentials: Credentials = None
-    # def test(self,x):
-    #     print(f'## {clear_line(x)}')
 
     _bg = False
     _err = print_err
@@ -158,13 +160,15 @@ class BaseContainer:
     # means I need to add a user to the container.
 
 
-class Megadl(BaseContainer):
+class Mega(BaseContainer):
     def __init__(self, url: str, destination: str = getcwd(),
                  credentials: Credentials = Credentials(username=None, password=None), _err=None,
                  _out=None, _bg=False, _done=None) -> None:
         super().__init__(url=url, destination=destination, credentials=credentials, _err=_err, _out=_out, _done=_done,
                          _bg=_bg)
-        self.container = "oriolfilter/megadl:1.0"
+        # self._container = "tb"
+        self._container = "oriolfilter/megadl:1.0"
+        self._entrypoint = "/usr/local/bin/megadl"
 
 
 def manager(url: str, destination: str = getcwd(),
@@ -176,7 +180,7 @@ def manager(url: str, destination: str = getcwd(),
     If the domain url isn't registered it raises up an Exception
     """
     " ** stuff ** "
-    domain_dict: dict = {'mega.nz': Megadl}
+    domain_dict: dict = {'mega.nz': Mega}
     domain: str = urlparse(url).netloc
     if domain in domain_dict:
         return domain_dict[domain](url=url, destination=destination, credentials=credentials, _err=_err, _out=_out,
