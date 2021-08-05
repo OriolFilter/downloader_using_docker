@@ -20,7 +20,9 @@
 - [x] By default uses megadl and no longer uses a python script
 - [x] Upload conainer to dockerhub
 
-- [x] Errors capture the sh command error so it mantains its information
+##### Exceptions.py
+
+- [ ] Errors capture the sh command error so it mantains its information
   
 [comment]: <> (- [ ] Allow passing command arguments to modify its behaviour)
 
