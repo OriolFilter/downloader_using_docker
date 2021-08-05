@@ -38,5 +38,4 @@ RUN /usr/bin/tar xzvf ${PKGTAR} --transform s/${PKGNAME}/megatools/ && \
 USER 1000:1000
 # Change workdir to the download folder
 WORKDIR /downloads
-ENTRYPOINT ["/bin/sh"]
-#ENTRYPOINT ["/usr/bin/dlmanager"]
+ENTRYPOINT ["/usr/local/bin/megadl"]

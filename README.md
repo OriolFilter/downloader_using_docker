@@ -12,10 +12,17 @@
 
 [comment]: <> (- [ ] Change its name to find_in_files.py or something like that, and update manager.py to use the library created.)
 - [ ] Add error handling for packages not installed
+- [ ] Add an Exceptions.py
+
 
 #### manager.py
 
-- [ ] Allow passing command arguments to modify its behaviour
+- [x] By default uses megadl and no longer uses a python script
+- [x] Upload conainer to dockerhub
+
+- [x] Errors capture the sh command error so it mantains its information
+  
+[comment]: <> (- [ ] Allow passing command arguments to modify its behaviour)
 
 
 #### To Do
@@ -23,10 +30,9 @@
 - [ ] Comment/Document
 - [ ] Dockerfile, useradd custom user (this one should be easy tho)
 - [ ] Add support for Google Drive
-- [ ] Upload megadl docker to dockerhub
-- [ ] Transform manager.py to a library
 
 #### Dockerfiles
 
-- [ ] Megadl
+- [x] Megadl
+- [x] Google Drive
 - [ ] Discord bot to download files

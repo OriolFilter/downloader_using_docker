@@ -1,10 +1,11 @@
 from os import getcwd
 from typing import Union
 from urllib.parse import urlparse
-
+from dltools import Entrypoints
 import sh
-from sh import docker, ErrorReturnCode, ErrorReturnCode_125
+from sh import docker, ErrorReturnCode, ErrorReturnCode_125, ErrorReturnCode_1
 
+ErrorReturnCode_1: ErrorReturnCode
 ErrorReturnCode_125: ErrorReturnCode
 
 from colored import fore, style
@@ -19,6 +20,11 @@ class UnregisteredDomain(Exception):
     """
     pass
 
+class ErrorDuringContainerExecution(Exception):
+    """
+    For some reason the container stopped working, check the output in order to obtain more information
+    """
+    pass
 
 class CannotRunTheContainer(Exception):
     """
@@ -71,25 +77,32 @@ class BaseContainer:
         """
         Start download container process
         """
-        # self.job = docker.run('-t', '--volume', f'{self.destination}:/downloads:rw', self.container, self.url,
-        #                                   _err=self._err,
-        #                                   _out=self._out,
-        #                                   # _done=self._done
-        #                                   # _bg=self._bg
-        #                                   )
         try:
-            print(self._container)
-            self.job = docker.run('-t', ('', f'--entrypoint {self._entrypoint}'), '--volume',
-                                  f'{self.destination}:/downloads:rw',
-                                  self._container, self.url,
-                                  _err=self._err,
-                                  _out=self._out,
-                                  _done=self._done,
-                                  _bg=self._bg
-                                  )
+            if not self._entrypoint:
+                self.job = docker.run('-t', '--volume',
+                                      f'{self.destination}:/downloads:rw',
+                                      self._container, self.url,
+                                      _err=self._err,
+                                      _out=self._out,
+                                      _done=self._done,
+                                      _bg=self._bg
+                                      )
+            else:
+                self.job = docker.run('-t', '--entrypoint', self._entrypoint, '--volume',
+                                      f'{self.destination}:/downloads:rw',
+                                      self._container, self.url,
+                                      _err=self._err,
+                                      _out=self._out,
+                                      _done=self._done,
+                                      _bg=self._bg
+                                      )
+        except ErrorReturnCode_1 as e:
+            print(f'[Command] {e.full_cmd}')
+            raise ErrorDuringContainerExecution()
         except ErrorReturnCode_125 as e:
-            print("Docker not running or not accessible")
-            # raise CannotRunTheContainer("hi")
+            print(f'[Command] {e.full_cmd}')
+            print("Docker not running or not accessible??")
+            raise CannotRunTheContainer()
 
     def kill(self) -> None:
         """
@@ -142,6 +155,7 @@ class BaseContainer:
     _container: str = None  # Docker container name
     _entrypoint: str = None  # Command used as entrypoint for the docker container
 
+
     url: str = None
     destination: str = None
 
@@ -166,9 +180,8 @@ class Mega(BaseContainer):
                  _out=None, _bg=False, _done=None) -> None:
         super().__init__(url=url, destination=destination, credentials=credentials, _err=_err, _out=_out, _done=_done,
                          _bg=_bg)
-        # self._container = "tb"
         self._container = "oriolfilter/megadl:1.0"
-        self._entrypoint = "/usr/local/bin/megadl"
+        self._entrypoint = Entrypoints.Megatools.megadl()
 
 
 def manager(url: str, destination: str = getcwd(),
