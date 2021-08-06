@@ -18,10 +18,9 @@ ADD "${PKGFOLDER}/${PKGTAR}" ${WK}
 # Install requirements for python
 RUN pip install -r requirements.txt
 
-RUN chmod +x main.py
-# Download, untar and install megatools to the system
+RUN chmod +x main.py && ln -s ${WK}/main.py /usr/bin/gdrive
 
 #USER 1000:1000
 # Change workdir to the download folder
 WORKDIR /downloads
-ENTRYPOINT ["{WK}/main.py"]
+ENTRYPOINT ["/usr/bin/gdrive"]
