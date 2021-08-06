@@ -13,7 +13,7 @@ ARG PKGTAR="${PKGNAME}.tar.gz"
 ARG WK="/folder"
 
 LABEL version='1.0'
-LABEL description="Customized Dockerfile for python-3.9.6 buster"
+LABEL description="Customized Dockerfile for python-3.9.6 buster with megatools installed"
 LABEL org.opencontainers.image.authors='filter.oriol@gmail.com'
 LABEL py_packages_installed="sh colored"
 LABEL megatools_version="1.10.0"
