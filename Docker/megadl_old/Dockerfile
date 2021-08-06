@@ -1,9 +1,9 @@
 # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
-FROM alpine:3.14.0
+FROM python:3.9.6-buster
 
 ## Megatools arguments used to download, untar and install the package
 # Megatools package folder file
-ARG PKGPATH="https://megatools.megous.com/builds"
+ARG PKGFOLDER="https://megatools.megous.com/builds"
 # Megatools package file name args
 ARG PKGNAME="megatools-1.10.3"
 # Megatools package tar file name args
@@ -13,29 +13,31 @@ ARG PKGTAR="${PKGNAME}.tar.gz"
 ARG WK="/folder"
 
 LABEL version='1.0'
-LABEL description="Customized Dockerfile for alpine-3.14.0 with megatools installed"
+LABEL description="Customized Dockerfile for python-3.9.6 buster"
 LABEL org.opencontainers.image.authors='filter.oriol@gmail.com'
-#LABEL py_packages_installed="sh colored"
+LABEL py_packages_installed="sh colored"
 LABEL megatools_version="1.10.0"
 LABEL megatools_package="https://megatools.megous.com/builds/"
-LABEL megatools_used_package="${PKGPATH}/${PKGTAR}"
+LABEL megatools_used_package="${PKGFOLDER}/${PKGTAR}"
 
-RUN apk upgrade --update-cache --available && apk add --no-cache tar asciidoc gcc make g++ zlib-dev glib-dev libressl-dev curl-dev
-#RUN apt-get update && apt-get install -y asciidoc && apt-get clean
+RUN apt-get update && apt-get install -y asciidoc && apt-get clean
 #    &&
 
 WORKDIR ${WK}
-ADD "${PKGPATH}/${PKGTAR}" ${WK}
+ADD main.py ${WK}
+ADD requirements.txt ${WK}
+ADD "${PKGFOLDER}/${PKGTAR}" ${WK}
 # Install requirements for python
+RUN pip install -r requirements.txt
 
 # Download, untar and install megatools to the system
 
-RUN tar --version
-RUN /usr/bin/tar xzvf ${PKGTAR} --transform s/${PKGNAME}/megatools/ && \
+RUN /bin/tar xzvf ${PKGTAR} --transform s/${PKGNAME}/megatools/ && \
     cd megatools && \
-    ./configure && make && make install && cd .. && rm -rf megatools && rm -rf ${PKGTAR}
+    ./configure && make && make install && cd .. && rm -rf megatools && \
+    chmod +x main.py && ln -s ${WK}/main.py /usr/bin/dlmanager && rm -rf ${PKGTAR}
 
 USER 1000:1000
 # Change workdir to the download folder
 WORKDIR /downloads
-ENTRYPOINT ["/usr/local/bin/megadl"]
+ENTRYPOINT ["/usr/bin/dlmanager"]

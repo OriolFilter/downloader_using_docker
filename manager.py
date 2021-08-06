@@ -71,7 +71,7 @@ if len(link_list) > 0:
         linkobj: LINKOBJ
         try:
             docker.run('-t', '--volume', f'{linkobj.destination}:/downloads:rw', 'megadl', linkobj.url, _err=err,
-                       _out=output)
+                       _out=output, _bg=True)
         except ErrorReturnCode as e: pass
 else:
     print("No files and or links found inside the files")

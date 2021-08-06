@@ -1,22 +1,40 @@
+#### containers.py
+
+- [x] Allow downloading Mega files.
+- [ ] Allow downloading Google Drive.
+- [ ] Allow downloading Mediafire
+- [x] Create classes for each system/downloader used.
+    - [x] Mega
+    - [ ] Google Drive
+    - [ ] Mediafire
+
+- [x] Create a library
+
+[comment]: <> (- [ ] Change its name to find_in_files.py or something like that, and update manager.py to use the library created.)
+- [ ] Add error handling for packages not installed
+- [ ] Add an Exceptions.py
+
+
 #### manager.py
 
-- [x] Allow downloading mega files.
-- [ ] Allow downloading google drive.
-- [ ] Allow downloading mediafire
-- [ ] Create classes for each system/downloader used.
+- [x] By default uses megadl and no longer uses a python script
+- [x] Upload conainer to dockerhub
 
-- [ ] Create a library
-- [ ] Change it's name to find_in_files.py or something like that, and update manager.py to use the library created.
+##### Exceptions.py
+
+- [ ] Errors capture the sh command error so it mantains its information
+  
+[comment]: <> (- [ ] Allow passing command arguments to modify its behaviour)
+
 
 #### To Do
 
 - [ ] Comment/Document
 - [ ] Dockerfile, useradd custom user (this one should be easy tho)
 - [ ] Add support for Google Drive
-- [ ] Upload megadl docker to dockerhub
-- [ ] Transform manager.py to a library
 
 #### Dockerfiles
 
-- [ ] Megadl
+- [x] Megadl
+- [x] Google Drive
 - [ ] Discord bot to download files
