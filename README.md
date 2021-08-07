@@ -38,3 +38,5 @@
 - [x] Megadl
 - [x] Google Drive
 - [ ] Discord bot to download files
+
+##### Automate building custom images
