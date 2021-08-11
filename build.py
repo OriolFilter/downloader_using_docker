@@ -1,6 +1,7 @@
 from os import system
 from sh import docker
 from dltools.containers import BaseContainersRepo, CustomContainerNames
+from getpass import getuser
 
 build_list = [BaseContainersRepo.megadl]
 custom_build_list = [CustomContainerNames.megadl]
@@ -40,6 +41,7 @@ own_user = USER(uname=None, gname=None)
 
 for repo, tag in zip(build_list, custom_build_list):
     system(f"docker build -t {tag} -<< {eof(USER=own_user, OGcontainer=repo)}")
+    # It's ugly, didn't managed to pass EOF using sh library
     # docker.build('-t', tag, '-', _in=eof(USER=own_user, OGcontainer=repo))
 
 """

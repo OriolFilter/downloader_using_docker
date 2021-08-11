@@ -7,7 +7,8 @@ from validators import url as vurl
 from os.path import dirname
 from os import getcwd
 from glob import glob
-from dltools.containers import manager, ErrorDuringContainerExecution, CannotRunTheContainer
+from dltools.containers import manager
+from dltools.Exceptions import ErrorDuringContainerExecution, CannotRunTheContainer
 
 
 class LINKOBJ:

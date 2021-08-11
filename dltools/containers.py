@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 from dltools import Entrypoints
 import sh
 from sh import docker, ErrorReturnCode, ErrorReturnCode_125, ErrorReturnCode_1
+from dltools.Exceptions import *
 
 ErrorReturnCode_1: ErrorReturnCode
 ErrorReturnCode_125: ErrorReturnCode
@@ -11,29 +12,6 @@ ErrorReturnCode_125: ErrorReturnCode
 from colored import fore, style
 
 
-class UnregisteredDomain(Exception):
-    """
-    Raises when the domain gives isn't registred.
-
-    In case of having this error, consider contacting the administrator and providing the link that returns error in
-    order to update the list and/or add new methods
-    """
-    pass
-
-
-class ErrorDuringContainerExecution(Exception):
-    """
-    For some reason the container stopped working, check the output in order to obtain more information
-    """
-    pass
-
-
-class CannotRunTheContainer(Exception):
-    """
-    For some reason wasn't able to start the docker container, it might be due not being able to access the container
-    (maybe due too many requests to DockerHub) or docker service isn't running
-    """
-    pass
 
 # API call 'g' failed: Server returned error EBLOCKED
 
@@ -227,8 +205,9 @@ def manager(url: str, destination: str = getcwd(),
     If the domain url isn't registered it raises up an Exception
     """
     " ** stuff ** "
-    domain_dict: dict = {'mega.nz': Mega,
-                         'docs.google.com': GDrive}
+    domain_dict: dict = {'mega.nz': Mega
+                         # 'docs.google.com': GDrive
+                         }
     domain: str = urlparse(url).netloc
     if domain in domain_dict:
         return domain_dict[domain](url=url, destination=destination, credentials=credentials, _err=_err, _out=_out,
