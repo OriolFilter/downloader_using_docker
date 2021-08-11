@@ -22,7 +22,7 @@
 
 ##### Exceptions.py
 
-- [ ] Errors capture the sh command error so it mantains its information
+- [ ] Errors pass the sh command error so it maintains its content
   
 [comment]: <> (- [ ] Allow passing command arguments to modify its behaviour)
 
@@ -38,3 +38,5 @@
 - [x] Megadl
 - [x] Google Drive
 - [ ] Discord bot to download files
+
+##### Automate building custom images
