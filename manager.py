@@ -6,9 +6,12 @@
 from validators import url as vurl
 from os.path import dirname
 from os import getcwd
+from getpass import getuser
 from glob import glob
-from dltools.containers import manager
+from dltools.containers import manager, ContainerUser
 from dltools.Exceptions import ErrorDuringContainerExecution, CannotRunTheContainer
+
+cont_user = ContainerUser(uid=1001, gid=1002)
 
 
 class LINKOBJ:
@@ -28,12 +31,13 @@ link_list: list = []
 # Will search the files with the word "file" in the current directory (and recursive), then proceed to call the docker
 # downloader and maybe (only maybe, uncompress it afterwards)
 
-file_list: list[str] = glob(f'{getcwd()}/**/{keyword}', recursive=True)
+file_list: list = glob(f'{getcwd()}/**/{keyword}', recursive=True)
 
 for file in file_list:
     with open(file, 'r') as f:
         line: str
-        for line in f.read().split('\n'):  # Each line represents to have a url, if doesn't pass the validation process it's discarded
+        for line in f.read().split(
+                '\n'):  # Each line represents to have a url, if doesn't pass the validation process it's discarded
             if vurl(line):
                 link_list.append(LINKOBJ(url=line, destination=dirname(file)))
 
@@ -42,7 +46,7 @@ if len(link_list) > 0:
         linkobj: LINKOBJ
         try:
 
-            download = manager(url=linkobj.url,
+            download = manager(url=linkobj.url, containerUser=cont_user,
                                destination=linkobj.destination,
                                _bg=False)
             download.start()
