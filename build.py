@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
 from os import system
 from sh import docker
 from dltools.containers import BaseContainersRepo, CustomContainerNames
 from getpass import getuser
+
+# This is UNUSABLE, keeping for record, yet, has this has no reason to be used ANYWHERE
 
 build_list = [BaseContainersRepo.megadl]
 custom_build_list = [CustomContainerNames.megadl]

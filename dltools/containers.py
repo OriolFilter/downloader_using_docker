@@ -12,7 +12,6 @@ ErrorReturnCode_125: ErrorReturnCode
 from colored import fore, style
 
 
-
 # API call 'g' failed: Server returned error EBLOCKED
 
 
@@ -22,25 +21,38 @@ class QuotaSuprassed(Exception):
     """
     pass
 
+
 # Pending, probably never happening
 # import getpass
-# class user():
-#     user:str=getpass
-#     user:str=getpass
+class ContainerUser:
+    """
+    Used to pass a default user:group to the docker container, to avoid permissions issues, since using root would fuck
+    the permissions of the files and require a root user in order to being to modify/update the permissions them again
+    """
+
+    def __init__(self, uid=None, gid=None):
+        self.uid = uid or self.uid
+        self.gid = gid or self.gid
+
+    uid: int = 1000
+    gid: int = 1000
+
 
 class BaseContainersRepo:
     """
     Contains the base containers repositories, mainly used to build an image with a custom username+group
     """
-    megadl="oriolfilter/megadl:1.0"
-    # grive="oriolfilter/gdrive:1.0"
+    gdrive = "oriolfilter/gdrive:1.0"  # Non existent atm
+    megadl = "oriolfilter/megadl:1.0"
+
 
 class CustomContainerNames:
     """
     Contains the base containers repositories, mainly used to build an image with a custom username+group
     """
-    megadl="custom/megadl"
-    grive="custom/gdrive"
+    megadl = "custom/megadl"
+    gdrive = "custom/gdrive"
+
 
 class Credentials:
     """
@@ -61,11 +73,13 @@ class BaseContainer:
     """
 
     def __init__(self, url: str, destination: str = getcwd(),
+                 containerUser: ContainerUser = ContainerUser(),
                  credentials: Credentials = Credentials(username=None, password=None), _err=None,
                  _out=None, _bg=False, _done=None) -> None:
         """
         Introduces the default configuration values
         """
+        self.containerUser = containerUser
         self.credentials = credentials
         self.url = url
         self.destination = destination
@@ -80,8 +94,9 @@ class BaseContainer:
         """
         try:
             if not self._entrypoint:
-                self.job = docker.run('-t', '--volume',
-                                      f'{self.destination}:/downloads:rw',
+                self.job = docker.run('-t',
+                                      '-u', f'{self.containerUser.uid}:{self.containerUser.gid}',
+                                      '--volume', f'{self.destination}:/downloads:rw',
                                       self._container, self.url,
                                       _err=self._err,
                                       _out=self._out,
@@ -89,8 +104,10 @@ class BaseContainer:
                                       _bg=self._bg
                                       )
             else:
-                self.job = docker.run('-t', '--entrypoint', self._entrypoint, '--volume',
-                                      f'{self.destination}:/downloads:rw',
+                self.job = docker.run('-t',
+                                      '--entrypoint', self._entrypoint,
+                                      '-u', f'{self.containerUser.uid}:{self.containerUser.gid}',
+                                      '--volume', f'{self.destination}:/downloads:rw',
                                       self._container, self.url,
                                       _err=self._err,
                                       _out=self._out,
@@ -163,6 +180,7 @@ class BaseContainer:
 
     done: bool = None
 
+    containerUser: ContainerUser = None
     credentials: Credentials = None
 
     _bg = False
@@ -176,27 +194,28 @@ class BaseContainer:
 
 class Mega(BaseContainer):
     def __init__(self, url: str, destination: str = getcwd(),
+                 containerUser: ContainerUser = ContainerUser(),
                  credentials: Credentials = Credentials(username=None, password=None), _err=None,
                  _out=None, _bg=False, _done=None) -> None:
         super().__init__(url=url, destination=destination, credentials=credentials, _err=_err, _out=_out, _done=_done,
                          _bg=_bg)
+        self._container = CustomContainerNames.megadl
         self._container = BaseContainersRepo.megadl
         self._entrypoint = Entrypoints.Megatools.megadl()
 
 
 class GDrive(BaseContainer):
     def __init__(self, url: str, destination: str = getcwd(),
+                 containerUser: ContainerUser = ContainerUser(),
                  credentials: Credentials = Credentials(username=None, password=None), _err=None,
                  _out=None, _bg=False, _done=None) -> None:
         super().__init__(url=url, destination=destination, credentials=credentials, _err=_err, _out=_out, _done=_done,
                          _bg=_bg)
-        # self._container = "oriolfilter/megadl:1.0"
-        self._container = CustomContainerNames.gdrive
+        self._container = BaseContainersRepo.gdrive
 
-
-# 6945206563
 
 def manager(url: str, destination: str = getcwd(),
+            containerUser: ContainerUser = ContainerUser(),
             credentials: Credentials = Credentials(username=None, password=None), _err=None,
             _out=None, _bg=False, _done=None) -> BaseContainer:
     """
@@ -210,7 +229,8 @@ def manager(url: str, destination: str = getcwd(),
                          }
     domain: str = urlparse(url).netloc
     if domain in domain_dict:
-        return domain_dict[domain](url=url, destination=destination, credentials=credentials, _err=_err, _out=_out,
+        return domain_dict[domain](url=url, containerUser=containerUser, destination=destination,
+                                   credentials=credentials, _err=_err, _out=_out,
                                    _bg=_bg, _done=_done)
     else:
         raise UnregisteredDomain()
