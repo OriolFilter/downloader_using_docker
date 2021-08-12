@@ -11,7 +11,7 @@ from glob import glob
 from dltools.containers import manager, ContainerUser
 from dltools.Exceptions import ErrorDuringContainerExecution, CannotRunTheContainer
 
-cont_user = ContainerUser(uid=1001, gid=1002)
+cont_user = ContainerUser(uid=1002, gid=1002)
 
 
 class LINKOBJ:

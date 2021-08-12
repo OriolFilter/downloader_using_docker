@@ -197,7 +197,7 @@ class Mega(BaseContainer):
                  containerUser: ContainerUser = ContainerUser(),
                  credentials: Credentials = Credentials(username=None, password=None), _err=None,
                  _out=None, _bg=False, _done=None) -> None:
-        super().__init__(url=url, destination=destination, credentials=credentials, _err=_err, _out=_out, _done=_done,
+        super().__init__(url=url, destination=destination, containerUser=containerUser,credentials=credentials, _err=_err, _out=_out, _done=_done,
                          _bg=_bg)
         self._container = CustomContainerNames.megadl
         self._container = BaseContainersRepo.megadl
@@ -209,7 +209,7 @@ class GDrive(BaseContainer):
                  containerUser: ContainerUser = ContainerUser(),
                  credentials: Credentials = Credentials(username=None, password=None), _err=None,
                  _out=None, _bg=False, _done=None) -> None:
-        super().__init__(url=url, destination=destination, credentials=credentials, _err=_err, _out=_out, _done=_done,
+        super().__init__(url=url, destination=destination, containerUser=containerUser, credentials=credentials, _err=_err, _out=_out, _done=_done,
                          _bg=_bg)
         self._container = BaseContainersRepo.gdrive
 
