@@ -76,18 +76,23 @@ autodown
 
 ##### Test
 
+Try to use the next url (first open the link in the url to check it still exists):
+
 - https://mega.nz/folder/GgMH3I4C#nM_NsEidSRurANbNUezo3w
 
-Try to use the next url (first open the link in the url to check it still exists):
+It should container 2 text files called "testing_file" and "testing_file_b"
+
 ###### Example script
 
 First we create a file called "link" somewhere inside our current directory.
 
-Finally we execute the script.
+Finally, we execute the script.
 
 ```shell
 autodown
 ```
+
+To check if we downloaded the files correctly, we must check the content from the destination folder
 
 ###### Example bash/docker
 
