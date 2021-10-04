@@ -4,9 +4,6 @@ from colored import fore, style
 from sh import megadl, ErrorReturnCode
 from sys import argv
 
-
-# http://manpages.ubuntu.com/manpages/cosmic/man7/megatools.7.html
-
 def clean_line(line):
     if not line:
         return None
@@ -14,7 +11,7 @@ def clean_line(line):
         return clean_line(bytes.decode(str.encode(line)[str.encode(line).find(b'\x1b[0K')+4:]))
     elif str.encode(line) == str.encode('\r'):
         return None
-    elif str.encode(line)[0] == 13:  # \r
+    elif str.encode(line)[0] == 13:
         return None
     elif str.encode(line) == str.encode('\r\n'):
         return None
@@ -40,11 +37,7 @@ if len(args_list) > 0:
     for link in args_list:
         try:
             megadl(link, _err=err, _out=output)
-        except ErrorReturnCode as e:
-            pass  # ??????
+        except ErrorReturnCode:
+            pass
 else:
     print("No mega links (arguments) given")
-#
-# # https://amoffat.github.io/sh/sections/asynchronous_execution.html#output-callbacks
-#
-# # https://amoffat.github.io/sh/sections/asynchronous_execution.html

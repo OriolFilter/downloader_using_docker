@@ -1,24 +1,22 @@
-from os import getcwd
+from os import getcwd, getuid
 from typing import Union
 from urllib.parse import urlparse
 from dltools import Entrypoints
 import sh
 from sh import docker, ErrorReturnCode, ErrorReturnCode_125, ErrorReturnCode_1
 from dltools.Exceptions import *
+from pathlib import Path
+from colored import fore, style
+from dltools import Entrypoints
+from dltools import Exceptions
+
+# Errors to capture
 
 ErrorReturnCode_1: ErrorReturnCode
 ErrorReturnCode_125: ErrorReturnCode
 
-from colored import fore, style
-
-
-# API call 'g' failed: Server returned error EBLOCKED
-
 
 class QuotaSuprassed(Exception):
-    """
-    sdas
-    """
     pass
 
 
@@ -34,15 +32,15 @@ class ContainerUser:
         self.uid = uid or self.uid
         self.gid = gid or self.gid
 
-    uid: int = 1000
-    gid: int = 1000
+    uid: int = getuid()
+    gid: int = getuid()
 
 
 class BaseContainersRepo:
     """
     Contains the base containers repositories, mainly used to build an image with a custom username+group
     """
-    gdrive = "oriolfilter/gdrive:1.0"  # Non existent atm
+    # gdrive = "oriolfilter/gdrive:1.0"  # Non existent atm
     megadl = "oriolfilter/megadl:1.0"
 
 
@@ -95,7 +93,7 @@ class BaseContainer:
         try:
             if not self._entrypoint:
                 self.job = docker.run('-t',
-                                      '-u', f'{self.containerUser.uid}:{self.containerUser.gid}',
+                                      '-u', f'{containerUser.uid}:{containerUser.gid}',
                                       '--volume', f'{self.destination}:/downloads:rw',
                                       self._container, self.url,
                                       _err=self._err,
@@ -115,10 +113,10 @@ class BaseContainer:
                                       _bg=self._bg
                                       )
         except ErrorReturnCode_1 as e:
-            print(f'[Command] {e.full_cmd}')
+            print(f'{fore.GREEN_3A}[{fore.RED}Command{fore.GREEN_3A}]{style.RESET} {e.full_cmd}')
             raise ErrorDuringContainerExecution()
         except ErrorReturnCode_125 as e:
-            print(f'[Command] {e.full_cmd}')
+            print(f'{fore.GREEN_3A}[{fore.RED}Command{fore.GREEN_3A}]{style.RESET} {e.full_cmd}')
             print("Docker not running or not accessible??")
             raise CannotRunTheContainer()
 
@@ -197,7 +195,8 @@ class Mega(BaseContainer):
                  containerUser: ContainerUser = ContainerUser(),
                  credentials: Credentials = Credentials(username=None, password=None), _err=None,
                  _out=None, _bg=False, _done=None) -> None:
-        super().__init__(url=url, destination=destination, containerUser=containerUser,credentials=credentials, _err=_err, _out=_out, _done=_done,
+        super().__init__(url=url, destination=destination, containerUser=containerUser, credentials=credentials,
+                         _err=_err, _out=_out, _done=_done,
                          _bg=_bg)
         self._container = CustomContainerNames.megadl
         self._container = BaseContainersRepo.megadl
@@ -205,16 +204,18 @@ class Mega(BaseContainer):
 
 
 class GDrive(BaseContainer):
+    """ NOT IMPLEMENTED """
     def __init__(self, url: str, destination: str = getcwd(),
                  containerUser: ContainerUser = ContainerUser(),
                  credentials: Credentials = Credentials(username=None, password=None), _err=None,
                  _out=None, _bg=False, _done=None) -> None:
-        super().__init__(url=url, destination=destination, containerUser=containerUser, credentials=credentials, _err=_err, _out=_out, _done=_done,
+        super().__init__(url=url, destination=destination, containerUser=containerUser, credentials=credentials,
+                         _err=_err, _out=_out, _done=_done,
                          _bg=_bg)
         self._container = BaseContainersRepo.gdrive
 
 
-def manager(url: str, destination: str = getcwd(),
+def Manager(url: str, destination: str = getcwd(),
             containerUser: ContainerUser = ContainerUser(),
             credentials: Credentials = Credentials(username=None, password=None), _err=None,
             _out=None, _bg=False, _done=None) -> BaseContainer:

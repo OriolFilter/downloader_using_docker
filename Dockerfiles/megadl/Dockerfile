@@ -35,7 +35,6 @@ RUN /usr/bin/tar xzvf ${PKGTAR} --transform s/${PKGNAME}/megatools/ && \
     cd megatools && \
     ./configure && make && make install && cd .. && rm -rf megatools && rm -rf ${PKGTAR}
 
-USER 1000:1000
 # Change workdir to the download folder
 WORKDIR /downloads
 ENTRYPOINT ["/usr/local/bin/megadl"]

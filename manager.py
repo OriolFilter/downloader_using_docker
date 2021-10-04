@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
-## File that will call the downloader
-
-# https://www.codespeedy.com/check-if-a-string-is-a-valid-url-or-not-in-python/
-
 from validators import url as vurl
 from os.path import dirname
-from os import getcwd
+from os import getcwd, stat
 from getpass import getuser
 from glob import glob
-from dltools.containers import manager, ContainerUser
+from dltools.Containers import Manager, ContainerUser
 from dltools.Exceptions import ErrorDuringContainerExecution, CannotRunTheContainer
-
-cont_user = ContainerUser(uid=1002, gid=1002)
 
 
 class LINKOBJ:
-    def __init__(self, url, destination):
+    """ Stores url and destination from each mega link"""
+
+    def __init__(self, url:str, destination:str):
         self.url = url
         self.destination = destination
 
@@ -24,16 +20,16 @@ class LINKOBJ:
 
 
 keyword = "link"
-# file_list: list[str] = []
-# link_list: list[LINKOBJ] = []
 link_list: list = []
 
 # Will search the files with the word "file" in the current directory (and recursive), then proceed to call the docker
 # downloader and maybe (only maybe, uncompress it afterwards)
 
+# Finds all files named ${keyword}
 file_list: list = glob(f'{getcwd()}/**/{keyword}', recursive=True)
 
 for file in file_list:
+    # For each element in @file_list will start a docker container
     with open(file, 'r') as f:
         line: str
         for line in f.read().split(
@@ -45,15 +41,16 @@ if len(link_list) > 0:
     for linkobj in link_list:
         linkobj: LINKOBJ
         try:
-
-            download = manager(url=linkobj.url, containerUser=cont_user,
+            """ Calls the manager and passes the arguments """
+            download = Manager(url=linkobj.url, containerUser=ContainerUser(uid=stat(linkobj.destination).st_uid,
+                                                                            gid=stat(linkobj.destination).st_gid),
                                destination=linkobj.destination,
                                _bg=False)
             download.start()
 
         except Exception as e:
             print(f'Error downloading url: {linkobj.url}')
-            print(f'Error: {e}')
-            # Logs the error appropriately.
+            if len(str(e)) > 0:
+                print(f'Error: {e}')
 else:
     print("No files and or links found inside the files")

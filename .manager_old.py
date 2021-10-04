@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-## File that will call the downloader
+## KEEPING THIS FOR RECORD
 
 # https://www.codespeedy.com/check-if-a-string-is-a-valid-url-or-not-in-python/
 
